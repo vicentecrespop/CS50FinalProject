@@ -3,6 +3,7 @@ from flask import Flask, redirect, render_template, request, session
 from flask_session import Session
 from helpers import login_required, usd
 from werkzeug.security import check_password_hash, generate_password_hash
+from datetime import datetime
 
 # Configure Application
 app = Flask(__name__)
@@ -146,3 +147,47 @@ def reset():
 
     # GET
     return render_template("reset.html")
+
+@app.route("/income", methods=["GET", "POST"])
+@login_required
+def add_income():
+    # Add user income
+
+    # POST
+    if request.method == "POST":
+        income_type = request.form.get("income")
+        amount = request.form.get("amount")       
+
+        # Check for valid income type
+        if not income_type:            
+            return redirect("#")
+        
+        # Check for valid amount
+        try:
+            if not amount or float(amount) <= 0:                
+                return redirect("#")
+        except ValueError:            
+            return redirect("#")
+            # Nao informou amount valida --------------------------------------------------
+
+         # Initialize database
+        database = sqlite3.connect("users.db")
+        db = database.cursor()
+
+        # Get current income from user
+        db.execute("SELECT income FROM users WHERE id=?", (session["user_id"],))
+        current_income = db.fetchall()
+        new_income = current_income[0][0] + float(amount)
+
+        # Update income 
+        db.execute("UPDATE users SET income=? WHERE id=?", (new_income, session["user_id"]))
+        db.execute("INSERT INTO history (user_id, spending, type, amount, date) VALUES(?, ?, ?, ?, ?)", (session["user_id"], "income", income_type, float(amount), datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
+
+        # Update and close database
+        database.commit()
+        database.close()
+
+        return redirect("/")
+
+    # GET
+    return render_template("income.html")
