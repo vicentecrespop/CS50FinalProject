@@ -130,6 +130,19 @@ def reset():
 
     # POST
     if request.method == "POST":
+         
+        # Initialize database
+        database = sqlite3.connect("users.db")
+        db = database.cursor()
+
+        # Reset user info on database
+        db.execute("""UPDATE users SET income=?, spendings=? WHERE id=?""", (0, 0, session["user_id"]))
+
+        # Update and close database
+        database.commit()
+        database.close()
+
+        return redirect("/")
 
     # GET
     return render_template("reset.html")
