@@ -1,6 +1,6 @@
 import sqlite3
 from flask import Flask, redirect, render_template, request, session
-from flask import Session
+from flask_session import Session
 from helpers import login_required, usd
 from werkzeug.security import check_password_hash, generate_password_hash
 
@@ -30,24 +30,28 @@ def login():
 
         # Check if username was submitted
         if not name:
-            return 
-            # Não preencheu nome de usuario!! -------------------------------------------------------
+            database.close()
+            return redirect("#")            
         
         # Check if password was submitted
         if not password:
-            return
-            # Não preencheu a senha!! ----------------------------------------------------------------
+            database.close()
+            return redirect("#")            
 
         # Get user info from database
-        user_info = db.execute("""SELECT * FROM users WHERE username = ?""", name)
+        db.execute("""SELECT * FROM users WHERE username=?""", (name,))     
+        user_info= db.fetchall()          
 
         # Check for valid username and password
-        if len(user_info) != 1 or not check_password_hash(user_info[0]["hash"], password):
-            return 
-            # Nome de usuario ou senha invalidos!! ----------------------------------------------------
+        if len(user_info) != 1 or not check_password_hash(user_info[0][2], password):
+            database.close()
+            return redirect("#")            
         
         # Remember which user has logged in
-        session["user_id"] = user_info[0]["id"]
+        session["user_id"] = user_info[0][0]
+        
+        # Close database
+        database.close()
 
         # Redirect user to home page
         return redirect("/")
@@ -55,9 +59,21 @@ def login():
     # GET
     return render_template("login.html")
 
+@app.route("/logout")
+@login_required
+def logout():
+    # Log user out
+
+    # Forget any user
+    session.clear()
+
+    # Redirect user to login form
+    return redirect("/login")
+
 
 @app.route('/', methods=["GET", "POST"])
-def hello():
+@login_required
+def index():
     # POST
     if request.method == "POST":
         return "Hello, World!"
@@ -79,19 +95,21 @@ def register():
         confirmation = request.form.get("confirmation")
 
         # Check for valid username               
-        names_registered = db.execute("SELECT username FROM users")       
+        names_registered = db.execute("""SELECT username FROM users""")       
         for users in names_registered:
             if not username:
+                database.close()
                 return redirect("#")
-                # Não foi inserido um username ERRO!! --------------------------------------------------------------------
+                
             if username == users[0]:
-                return redirect("#")
-                # Nome de usuario ja cadastrado!! ------------------------------------------------------------------------                  
+                database.close()
+                return redirect("#")                                 
 
         # Check if entered passwords and they match
         if not password or password != confirmation:
+            database.close()
             return redirect("#")
-            # Não preencheu a senha ou senhas diferentes!! ---------------------------------------------------------------
+            
         hash = generate_password_hash(password)
 
         # Register new user into database
@@ -102,6 +120,16 @@ def register():
         database.close()
         return render_template("index.html")
 
-
     # GET
     return render_template("register.html")
+
+@app.route("/reset", methods=["GET", "POST"])
+@login_required
+def reset():
+    # Reset all user information
+
+    # POST
+    if request.method == "POST":
+
+    # GET
+    return render_template("reset.html")
