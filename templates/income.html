@@ -1,0 +1,19 @@
+{% extends "layout.html" %}
+
+{% block title %}Add income{% endblock %}
+
+{% block main %}
+    <form action="/income" method="post">
+        <div class="input-group mb-3">    
+            <select class="form-select btn" name="income" id="inputGroupSelect04" aria-label="Example select with button addon">
+                <option disabled selected>Type of income</option>
+                <option value="Salary">Salary</option>
+                <option value="Bonus">Bonus</option>
+                <option value="Money">Extra money</option>
+                <option value="Others">Others</option>
+            </select>
+            <input type="number" step="0.01" min="0" placeholder="$ Amount" class="form-control" name="amount" aria-label="Text input with dropdown button">
+            <button class="btn btn-outline-secondary" type="submit">Add income</button>
+        </div>
+    </form>
+{% endblock %}
