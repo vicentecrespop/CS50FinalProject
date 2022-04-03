@@ -18,29 +18,23 @@ def login():
     # Log user in
 
     # Forget any user_id
-    session.clear()
-
-    # Initialize database
-    database = sqlite3.connect("users.db")
-    db = database.cursor()  
+    session.clear()    
 
     # POST
     if request.method == "POST":
         name = request.form.get("username")
         password = request.form.get("password")
 
-        # Check if username was submitted
-        if not name:
-            database.close()
-            return redirect("#")            
-        
-        # Check if password was submitted
-        if not password:
-            database.close()
-            return redirect("#")            
+        # Check if username and password were submitted
+        if not name or not password:
+            return redirect("#")  
+
+        # Initialize database
+        database = sqlite3.connect("users.db")
+        db = database.cursor()                 
 
         # Get user info from database
-        db.execute("""SELECT * FROM users WHERE username=?""", (name,))     
+        db.execute("SELECT * FROM users WHERE username=?", (name,))     
         user_info= db.fetchall()          
 
         # Check for valid username and password
@@ -83,10 +77,7 @@ def index():
     return render_template("index.html")
 
 @app.route("/register", methods=["GET", "POST"])
-def register():
-    # Initialize database
-    database = sqlite3.connect("users.db")
-    db = database.cursor()     
+def register():    
 
     # POST
     if request.method == "POST":
@@ -95,8 +86,16 @@ def register():
         password = request.form.get("password")
         confirmation = request.form.get("confirmation")
 
+        # Check if entered passwords and they match
+        if not password or password != confirmation:            
+            return redirect("#")
+
+        # Initialize database
+        database = sqlite3.connect("users.db")
+        db = database.cursor()  
+            
         # Check for valid username               
-        names_registered = db.execute("""SELECT username FROM users""")       
+        names_registered = db.execute("SELECT username FROM users")       
         for users in names_registered:
             if not username:
                 database.close()
@@ -104,22 +103,17 @@ def register():
                 
             if username == users[0]:
                 database.close()
-                return redirect("#")                                 
-
-        # Check if entered passwords and they match
-        if not password or password != confirmation:
-            database.close()
-            return redirect("#")
-            
+                return redirect("#")                        
+        
         hash = generate_password_hash(password)
 
         # Register new user into database
-        db.execute("""INSERT INTO users (username, hash) VALUES(?, ?)""", (username, hash))
+        db.execute("INSERT INTO users (username, hash) VALUES(?, ?)", (username, hash))
 
         # Update and close database
         database.commit()
         database.close()
-        return render_template("index.html")
+        return redirect("/login")
 
     # GET
     return render_template("register.html")
@@ -137,7 +131,8 @@ def reset():
         db = database.cursor()
 
         # Reset user info on database
-        db.execute("""UPDATE users SET income=?, spendings=? WHERE id=?""", (0, 0, session["user_id"]))
+        db.execute("UPDATE users SET income=?, spendings=? WHERE id=?", (0, 0, session["user_id"]))
+        db.execute("DELETE FROM history WHERE user_id=?", (session["user_id"],))
 
         # Update and close database
         database.commit()
@@ -245,3 +240,23 @@ def spending():
 
     # GET
     return render_template("spending.html", expenses=expenses)
+
+@app.route("/history", methods=["GET", "POST"])
+@login_required
+def history():
+    # Show users history
+
+    # POST
+    if request.method == "POST":
+        return
+
+    # GET
+
+    # Initialize database
+    database = sqlite3.connect("users.db")
+    db = database.cursor()
+
+    # Get users history
+    db.execute("SELECT * FROM history WHERE user_id=?", (session["user_id"],))
+    history = db.fetchall()
+    return render_template("history.html", history=history)
