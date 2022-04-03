@@ -191,3 +191,57 @@ def add_income():
 
     # GET
     return render_template("income.html")
+
+@app.route("/spending", methods=["GET", "POST"])
+@login_required
+def spending():
+    # Add new spending
+
+    # List of expenses
+    expenses = ["Transportation", "Housing", "Medical/Health", "Groceries", "Insurance", "Shopping", "Hobbies/Entertainment", "Others"]
+
+    # POST
+    if request.method == "POST":
+        expense = request.form.get("expense")
+        item = request.form.get("item")
+        price = request.form.get("price")
+        amount = request.form.get("amount")
+
+        # Check is user filled all fields
+        if not expense or not item or not price or not amount:
+            return redirect("#")
+
+        # Check if selected valid expense
+        if expense not in expenses:
+            return redirect("#")
+
+        # Check if valid price and amount
+        try:
+            if int(amount) <= 0 or float(price) <= 0:
+                return redirect("#")
+        except ValueError:
+            return redirect("#")
+
+        # Initialize database
+        database = sqlite3.connect("users.db")
+        db = database.cursor()
+
+        # Get current spendings from user 
+        db.execute("SELECT spendings FROM users WHERE id=?", (session["user_id"],))
+        current_spendings = db.fetchall()
+
+        # Update user spendings
+        cost = int(amount) * float(price)
+        new_spendings = current_spendings[0][0] + cost
+        type = f"{expense}-{item}"
+        db.execute("INSERT INTO history (user_id, spending, type, amount, date) VALUES(?, ?, ?, ?, ?)", (session["user_id"], "spending", type, cost, datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
+        db.execute("UPDATE users SET spendings=? WHERE id=?", (new_spendings, session["user_id"]))
+
+        # Update and close database
+        database.commit()
+        database.close()
+
+        return redirect("/")
+
+    # GET
+    return render_template("spending.html", expenses=expenses)
