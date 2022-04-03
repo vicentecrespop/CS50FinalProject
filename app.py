@@ -132,7 +132,7 @@ def reset():
 
         # Reset user info on database
         db.execute("UPDATE users SET income=?, spendings=? WHERE id=?", (0, 0, session["user_id"]))
-        db.execute("DELETE FROM history WHERE user_id=?", (session["user_id"],))
+        db.execute("DELETE FROM user_history WHERE user_id=?", (session["user_id"],))
 
         # Update and close database
         database.commit()
@@ -176,7 +176,7 @@ def add_income():
 
         # Update income 
         db.execute("UPDATE users SET income=? WHERE id=?", (new_income, session["user_id"]))
-        db.execute("INSERT INTO history (user_id, spending, type, amount, date) VALUES(?, ?, ?, ?, ?)", (session["user_id"], "income", income_type, float(amount), datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
+        db.execute("INSERT INTO user_history (user_id, spending, type, description, amount, date) VALUES(?, ?, ?, ?, ?, ?)", (session["user_id"], "income", income_type, "Add", float(amount), datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
 
         # Update and close database
         database.commit()
@@ -227,9 +227,8 @@ def spending():
 
         # Update user spendings
         cost = int(amount) * float(price)
-        new_spendings = current_spendings[0][0] + cost
-        type = f"{expense}-{item}"
-        db.execute("INSERT INTO history (user_id, spending, type, amount, date) VALUES(?, ?, ?, ?, ?)", (session["user_id"], "spending", type, cost, datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
+        new_spendings = current_spendings[0][0] + cost        
+        db.execute("INSERT INTO user_history (user_id, spending, type, description, amount, date) VALUES(?, ?, ?, ?, ?, ?)", (session["user_id"], "spending", expense, item, cost, datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
         db.execute("UPDATE users SET spendings=? WHERE id=?", (new_spendings, session["user_id"]))
 
         # Update and close database
@@ -257,6 +256,6 @@ def history():
     db = database.cursor()
 
     # Get users history
-    db.execute("SELECT * FROM history WHERE user_id=?", (session["user_id"],))
+    db.execute("SELECT * FROM user_history WHERE user_id=?", (session["user_id"],))
     history = db.fetchall()
     return render_template("history.html", history=history)

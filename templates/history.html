@@ -9,6 +9,7 @@
         <tr class="table-dark">
             <th class="table-dark">Expense</th>
             <th class="table-dark">Type</th>
+            <th class="table-dark">Description</th>
             <th class="table-dark">Amount</th>
             <th class="table-dark">Date and Time</th>
         </tr>
@@ -16,10 +17,11 @@
     <tbody>
         {% for expenses in history %}
         <tr class="table-dark">
-            <td class="table-dark">{{expenses[2]}}</td>
-            <td class="table-dark">{{expenses[3]}}</td>
-            <td class="table-dark">{{expenses[4]}}</td>
-            <td class="table-dark">{{expenses[5]}}</td>
+            <td class="table-dark">{{ expenses[2] }}</td>
+            <td class="table-dark">{{ expenses[3] }}</td>
+            <td class="table-dark">{{ expenses[4] }}</td>
+            <td class="table-dark">{{ expenses[5] }}</td>
+            <td class="table-dark">{{ expenses[6] }}</td>
         </tr>
         {% endfor %}
     </tbody>
