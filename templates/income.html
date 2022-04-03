@@ -4,8 +4,33 @@
 
 {% block main %}
     <form action="/income" method="post">
-        <div class="input-group mb-3">    
-            <select class="form-select btn" name="income" id="inputGroupSelect04" aria-label="Example select with button addon">
+        <div class="d-grid gap-2 col-6 mx-auto">    
+            <div class="input-group">
+                <select name="month" class="form-select">
+                    <option disabled selected>Select Month</option>
+                    <option value="January">January</option>
+                    <option value="February">February</option>
+                    <option value="March">March</option>
+                    <option value="April">April</option>
+                    <option value="May">May</option>
+                    <option value="June">June</option>
+                    <option value="July">July</option>
+                    <option value="August">August</option>
+                    <option value="September">September</option>
+                    <option value="October">October</option>
+                    <option value="November">November</option>
+                    <option value="December">December</option>
+                </select>
+                <select name="year" class="form-select">
+                    <option disabled selecter>Select year</option>
+                    <option value="{{ year }}">{{ year }}</option>
+                    <option value="{{ year + 1 }}">{{ year + 1 }}</option>
+                    <option value="{{ year + 2 }}">{{ year + 2 }}</option>
+                    <option value="{{ year + 3 }}">{{ year + 3 }}</option>
+                    <option value="{{ year + 4 }}">{{ year + 4 }}</option>
+                </select>
+            </div>
+            <select class="form-select" name="income" id="inputGroupSelect04" aria-label="Example select with button addon">
                 <option disabled selected>Type of income</option>
                 <option value="Salary">Salary</option>
                 <option value="Bonus">Bonus</option>
@@ -13,7 +38,7 @@
                 <option value="Others">Others</option>
             </select>
             <input type="number" step="0.01" min="0" placeholder="$ Amount" class="form-control" name="amount" aria-label="Text input with dropdown button">
-            <button class="btn btn-outline-secondary" type="submit">Add income</button>
+            <button class="btn btn-dark" type="submit">Add income</button>
         </div>
     </form>
 {% endblock %}
