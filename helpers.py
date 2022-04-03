@@ -1,3 +1,4 @@
+import sqlite3
 from flask import redirect, render_template, request, session
 from functools import wraps
 
@@ -16,3 +17,4 @@ def login_required(f):
 def usd(value):
     # Format value to USD.
     return f"${value:,.2f}"
+
