@@ -1,0 +1,24 @@
+{% extends "layout.html" %}
+
+{% block title %}Add spending{% endblock %}
+
+{% block main %}
+    <form action="/spending" method="post">
+        <div class="d-grid gap-2 col-6 mx-auto">
+            <select class="form-select" name="expense" aria-label="Default select example">
+                <option disabled selected>Select type of expense</option>
+                <option value="{{ expenses[0] }}">{{ expenses[0] }}</option>
+                <option value="{{ expenses[1] }}">{{ expenses[1] }}</option>
+                <option value="{{ expenses[2] }}">{{ expenses[2] }}</option>
+                <option value="{{ expenses[3] }}">{{ expenses[3] }}</option>
+                <option value="{{ expenses[4] }}">{{ expenses[4] }}</option>
+                <option value="{{ expenses[5] }}">{{ expenses[5] }}</option>
+                <option value="{{ expenses[6] }}">{{ expenses[6] }}</option>                      
+            </select>
+            <input type="text" name="item" placeholder="Item">
+            <input type="number" name="price" min="0" step="0.01" placeholder="Price of unity">
+            <input type="number" name="amount" min="1" placeholder="Quantity">
+            <button type="submit" class="btn btn-dark">Add spending</button>
+        </div>
+    </form>
+{% endblock %}
