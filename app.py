@@ -68,13 +68,69 @@ def logout():
 
 @app.route('/', methods=["GET", "POST"])
 @login_required
-def index():
-    # POST
-    if request.method == "POST":
-        return "Hello, World!"
+def index():    
+    
+    date = datetime.now().date()
+    month = date.month
+    year = date.year
 
-    #GET
-    return render_template("index.html")
+    # List of expenses 
+    expense_items = {"Transportation": 0, "Housing": 0, "Medical/Health": 0, "Groceries": 0, "Insurance": 0, "Shopping": 0, "Hobbies/Entertainment": 0, "Others": 0}
+
+    # Initialize database
+    database = sqlite3.connect("users.db")
+    db = database.cursor()
+
+    # POST 
+    if request.method == "POST":
+
+        # Get month and year
+        month = request.form.get("month")
+        year = request.form.get("year")
+
+        # Check if user selected month and year
+        if not month or not year:
+            database.close()
+            return redirect("#")        
+
+        # Get usename
+        db.execute("SELECT username FROM users WHERE id=?", (session["user_id"],))
+        name = db.fetchall()
+
+        # Get data from selected month and year
+        db.execute("SELECT * FROM expenses WHERE user_id=? AND month=? AND year=?", (session["user_id"], month, year))
+        expenses = db.fetchall()
+        db.execute("SELECT * FROM user_history WHERE user_id=? AND date=?", (session["user_id"], f"{month}/{year}"))
+        history = db.fetchall()
+
+        # Check if user has expenses on the selected date
+        if len(expenses) != 1:
+            database.close()
+            return redirect("#")
+            
+        # Divide expenses into types            
+        for items in history:
+            if items[2] == "spending":             
+                expense_items[items[3]] += items[5]
+
+        # Get % values of each expense_items compared to the total spent and pass it as a list to index.html
+        user_income = expenses[0][1]
+        user_spending = expenses[0][2]
+        expenses_fraction = []
+        if user_spending > 0:            
+            for i in expense_items:
+                fraction = expense_items[i] / user_spending
+                expenses_fraction.append(fraction)              
+        else:
+            expenses_fraction = [0, 0, 0, 0, 0, 0, 0, 0]
+
+        # Close database and return POST
+        database.close()
+        return render_template("index.html", expenses=expenses_fraction, year=int(year), month=month, income=user_income, spending=user_spending)
+
+    # GET  
+    database.close()
+    return render_template("index.html",expenses=None, year=year, month=month)
 
 @app.route("/register", methods=["GET", "POST"])
 def register():    
@@ -132,7 +188,7 @@ def reset():
 
         # Reset user info on database
         date = datetime.now().date()
-        db.execute("UPDATE expenses SET income=?, spendings=?, month=?, year=? WHERE user_id=?", (0, 0, date.month, date.year, session["user_id"]))
+        db.execute("DELETE FROM expenses WHERE user_id=?", (session["user_id"],))
         db.execute("DELETE FROM user_history WHERE user_id=?", (session["user_id"],))
 
         # Update and close database
@@ -156,8 +212,8 @@ def add_income():
         month = request.form.get("month")     
         year = request.form.get("year")
 
-        # Check for valid income type
-        if not income_type:            
+        # Check if user filled all fields
+        if not income_type or not month or not year:            
             return redirect("#")
         
         # Check for valid amount
@@ -170,12 +226,7 @@ def add_income():
 
          # Initialize database
         database = sqlite3.connect("users.db")
-        db = database.cursor()
-
-        # Get current income from user
-        db.execute("SELECT income FROM expenses WHERE user_id=?", (session["user_id"],))
-        current_income = db.fetchall()
-        new_income = current_income[0][0] + float(amount)
+        db = database.cursor()        
 
         # Check if month and year already exist in expenses then update income
         db.execute("SELECT * FROM expenses WHERE month=? AND year=?", (month, year))
@@ -183,8 +234,13 @@ def add_income():
         if len(exist) != 1:
             db.execute("INSERT INTO expenses (user_id, income, month, year) VALUES(?, ?, ?, ?)", (session["user_id"], float(amount), month, year))
         else:
-            db.execute("UPDATE expenses SET income=?, month=?, year=? WHERE user_id=?", (new_income, month, year, session["user_id"]))        
-        db.execute("INSERT INTO user_history (user_id, spending, type, description, amount, date) VALUES(?, ?, ?, ?, ?, ?)", (session["user_id"], "income", income_type, "Add", float(amount), datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
+            # Get current income from user
+            db.execute("SELECT income FROM expenses WHERE user_id=? AND month=? AND year=?", (session["user_id"], month, year))
+            current_income = db.fetchall()
+            new_income = current_income[0][0] + float(amount)            
+            db.execute("UPDATE expenses SET income=? WHERE month=? AND year=? AND user_id=?", (new_income, month, year, session["user_id"]))        
+            
+        db.execute("INSERT INTO user_history (user_id, spending, type, description, amount, date) VALUES(?, ?, ?, ?, ?, ?)", (session["user_id"], "income", income_type, "", float(amount), f"{month}/{year}"))
 
         # Update and close database
         database.commit()
@@ -246,10 +302,10 @@ def spending():
             current_spendings = db.fetchall()
 
             # Calculate new spending value            
-            new_spendings = current_spendings[0] + cost
+            new_spendings = float(current_spendings[0][0]) + cost
 
-            db.execute("UPDATE expenses SET spendings=?, month=?, year=? WHERE user_id=?", (cost, month, year, session["user_id"]))   
-        db.execute("INSERT INTO user_history (user_id, spending, type, description, amount, date) VALUES(?, ?, ?, ?, ?, ?)", (session["user_id"], "spending", expense, item, cost, datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
+            db.execute("UPDATE expenses SET spendings=? WHERE month=? AND year=? AND user_id=?", (cost, month, year, session["user_id"]))   
+        db.execute("INSERT INTO user_history (user_id, spending, type, description, amount, date) VALUES(?, ?, ?, ?, ?, ?)", (session["user_id"], "spending", expense, item, cost, f"{month}/{year}"))
         
 
         # Update and close database
