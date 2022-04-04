@@ -45,6 +45,10 @@
         </div>
     </form>
     {% if expenses %}
+    <div>
+        <h3>Income: {{ income }}</h3>
+        <p><h3>Total Spendings: {{ spending }}</h3></p>
+    </div>
     <div id="chartdiv"></div>
     {% endif %}
 {% endblock %}
@@ -136,7 +140,7 @@
     }
     
     function loop() {
-        label.set("text", "{{ month }}/{{ year }}");
+        label.set("text", "{{ month }}/{{ year }}");        
         var data = getCurrentData();
         for(var i = 0; i < data.length; i++) {
             series.data.setIndex(i, data[i]);

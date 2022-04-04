@@ -126,7 +126,7 @@ def index():
 
         # Close database and return POST
         database.close()
-        return render_template("index.html", expenses=expenses_fraction, year=int(year), month=month, income=user_income, spending=user_spending)
+        return render_template("index.html", expenses=expenses_fraction, year=int(year), month=month, income=usd(user_income), spending=usd(user_spending))
 
     # GET  
     database.close()
@@ -239,7 +239,7 @@ def add_income():
             current_income = db.fetchall()
             new_income = current_income[0][0] + float(amount)            
             db.execute("UPDATE expenses SET income=? WHERE month=? AND year=? AND user_id=?", (new_income, month, year, session["user_id"]))        
-            
+
         db.execute("INSERT INTO user_history (user_id, spending, type, description, amount, date) VALUES(?, ?, ?, ?, ?, ?)", (session["user_id"], "income", income_type, "", float(amount), f"{month}/{year}"))
 
         # Update and close database
@@ -330,7 +330,11 @@ def history():
     # Get users history
     db.execute("SELECT * FROM user_history WHERE user_id=?", (session["user_id"],))
     history = db.fetchall()
+    amount = []
+
+    for items in history:
+        amount.append(usd(items[5]))
 
     # Close database
     database.close()
-    return render_template("history.html", history=history)
+    return render_template("history.html", history=history, amount=amount)
