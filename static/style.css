@@ -1,0 +1,9 @@
+.btn-outline-secondary
+{
+    color: #212529;
+    border-color: #212529;
+}
+.btn-outline-secondary:hover
+{
+    background-color: #212529;
+}
