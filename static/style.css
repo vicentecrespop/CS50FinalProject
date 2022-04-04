@@ -7,3 +7,35 @@
 {
     background-color: #212529;
 }
+
+@media (max-width: 560px)
+{
+    html
+    {
+        font-size: 50%;
+    }
+}
+
+@media (max-width: 280px)
+{
+    html 
+    {
+        font-size: 25%;
+    }
+}
+
+@media (max-width: 145px)
+{
+    html 
+    {
+        font-size: 12%;
+    }
+}
+
+@media (max-width: 70px)
+{
+    .history
+    {
+        font-size: 50%;
+    }
+}
