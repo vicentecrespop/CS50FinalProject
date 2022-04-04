@@ -298,13 +298,13 @@ def spending():
         else:
 
             # Get current spendings from user 
-            db.execute("SELECT spendings FROM expenses WHERE user_id=?", (session["user_id"],))
+            db.execute("SELECT spendings FROM expenses WHERE user_id=? AND month=? AND year=?", (session["user_id"], month, year))
             current_spendings = db.fetchall()
 
             # Calculate new spending value            
             new_spendings = float(current_spendings[0][0]) + cost
 
-            db.execute("UPDATE expenses SET spendings=? WHERE month=? AND year=? AND user_id=?", (cost, month, year, session["user_id"]))   
+            db.execute("UPDATE expenses SET spendings=? WHERE month=? AND year=? AND user_id=?", (new_spendings, month, year, session["user_id"]))   
         db.execute("INSERT INTO user_history (user_id, spending, type, description, amount, date) VALUES(?, ?, ?, ?, ?, ?)", (session["user_id"], "spending", expense, item, cost, f"{month}/{year}"))
         
 
