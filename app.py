@@ -93,7 +93,7 @@ def index():
         # Check if user selected month and year
         if not month or not year:
             database.close()
-            return redirect("#")        
+            return render_template("index.html", errorMsg="Select a month and year!!", year=date.year, expenses=None)        
 
         # Get usename
         db.execute("SELECT username FROM users WHERE id=?", (session["user_id"],))
@@ -108,7 +108,7 @@ def index():
         # Check if user has expenses on the selected date
         if len(expenses) != 1:
             database.close()
-            return redirect("#")
+            return render_template("index.html", errorMsg="No expenses registered at this date.", year=date.year, expenses=None)        
             
         # Divide expenses into types            
         for items in history:
@@ -209,6 +209,7 @@ def reset():
 @login_required
 def add_income():
     # Add user income
+    date = datetime.now().date()
 
     # POST
     if request.method == "POST":
@@ -218,15 +219,15 @@ def add_income():
         year = request.form.get("year")
 
         # Check if user filled all fields
-        if not income_type or not month or not year:            
-            return redirect("#")
+        if not income_type or not month or not year:           
+            return render_template("income.html", errorMsg="Please fill all fields!!", year=date.year)
         
         # Check for valid amount
         try:
             if not amount or float(amount) <= 0:                
-                return redirect("#")
+                return render_template("income.html", errorMsg="Forgot $ Amount!!", year=date.year)
         except ValueError:            
-            return redirect("#")
+            return render_template("income.html", errorMsg="Invalid amount!!", year=date.year)
             # Nao informou amount valida --------------------------------------------------
 
          # Initialize database
@@ -254,7 +255,6 @@ def add_income():
         return redirect("/")
 
     # GET
-    date = datetime.now().date()
     return render_template("income.html", year=date.year)
 
 @app.route("/spending", methods=["GET", "POST"])
@@ -264,6 +264,7 @@ def spending():
 
     # List of expenses
     expenses = ["Transportation", "Housing", "Medical/Health", "Groceries", "Insurance", "Shopping", "Hobbies/Entertainment", "Others"]
+    date = datetime.now().date()
 
     # POST
     if request.method == "POST":
@@ -276,18 +277,18 @@ def spending():
 
         # Check is user filled all fields
         if not expense or not item or not price or not amount or not month or not year:
-            return redirect("#")
+            return render_template("spending.html", errorMsg="Please fill all fields!!", year=date.year, expenses=expenses)
 
         # Check if selected valid expense
         if expense not in expenses:
-            return redirect("#")
+            return render_template("spending.html", errorMsg="Invalid expense!!", year=date.year, expenses=expenses)
 
         # Check if valid price and amount
         try:
             if int(amount) <= 0 or float(price) <= 0:
-                return redirect("#")
+                return render_template("spending.html", errorMsg="Invalid price!!", year=date.year, expenses=expenses)
         except ValueError:
-            return redirect("#")
+            return render_template("spending.html", errorMsg="Invalid price or amount!!", year=date.year, expenses=expenses)
 
         cost = int(amount) * float(price)
 
@@ -320,7 +321,6 @@ def spending():
         return redirect("/")
 
     # GET
-    date = datetime.now().date()
     return render_template("spending.html", expenses=expenses, year=date.year)
 
 @app.route("/history")
