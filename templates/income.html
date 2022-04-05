@@ -24,7 +24,7 @@
                     <option value="12">December</option>
                 </select>
                 <select name="year" class="form-select">
-                    <option disabled selecter>Select year</option>
+                    <option disabled selected>Select year</option>
                     <option value="{{ year }}">{{ year }}</option>
                     <option value="{{ year + 1 }}">{{ year + 1 }}</option>
                     <option value="{{ year + 2 }}">{{ year + 2 }}</option>
@@ -43,4 +43,7 @@
             <button class="btn btn-dark" type="submit">Add income</button>
         </div>
     </form>
+    {% if errorMsg %}
+        <div id="errorAlert" class="alert alert-danger" role="alert" >{{ errorMsg }}</div>
+    {% endif %}
 {% endblock %}
