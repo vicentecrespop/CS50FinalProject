@@ -26,8 +26,10 @@ def login():
         password = request.form.get("password")
 
         # Check if username and password were submitted
-        if not name or not password:
-            return redirect("#")  
+        if not name:
+            return render_template("login.html", errorMsg="Forgot username!!")
+        if not password:
+            return render_template("login.html", errorMsg="Forgot password!!")
 
         # Initialize database
         database = sqlite3.connect("users.db")
@@ -40,7 +42,7 @@ def login():
         # Check for valid username and password
         if len(user_info) != 1 or not check_password_hash(user_info[0][2], password):
             database.close()
-            return redirect("#")            
+            return render_template("login.html", errorMsg="Invalid username or password!!")       
         
         # Remember which user has logged in
         session["user_id"] = user_info[0][0]
@@ -142,9 +144,16 @@ def register():
         password = request.form.get("password")
         confirmation = request.form.get("confirmation")
 
+        # Check if entered username
+        if not username:
+            return render_template("register.html", errorMsg="Forgot username!!")
+
         # Check if entered passwords and they match
-        if not password or password != confirmation:            
-            return redirect("#")
+        if not password:            
+            return render_template("register.html", errorMsg="Forgot password!!")
+        if  password != confirmation:
+            return render_template("register.html", errorMsg="Passwords don't match!!")
+            
 
         # Initialize database
         database = sqlite3.connect("users.db")
@@ -152,14 +161,10 @@ def register():
             
         # Check for valid username               
         names_registered = db.execute("SELECT username FROM users")       
-        for users in names_registered:
-            if not username:
-                database.close()
-                return redirect("#")
-                
+        for users in names_registered:               
             if username == users[0]:
                 database.close()
-                return redirect("#")                        
+                return render_template("register.html", errorMsg="Username already in use.")
         
         hash = generate_password_hash(password)
 
@@ -338,3 +343,7 @@ def history():
     # Close database
     database.close()
     return render_template("history.html", history=history, amount=amount)
+
+
+if __name__ == '__main__':
+    app.run(debug=True)

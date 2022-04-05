@@ -13,16 +13,12 @@
 {% block main %}
 
     <form action="/register" id="form" method="post">
-        <div class="mb-3">
+        <div class="d-grid gap-2 col-6 mx-auto">    
             <input autocomplete="off" autofocus class="form-control mx-auto w-auto" id="username" name="username" placeholder="Username" type="text">
-        </div>
-        <div class="mb-3">
             <input class="form-control mx-auto w-auto" id="password" name="password" placeholder="Password" type="password">
-        </div>
-        <div class="mb-3">
             <input class="form-control mx-auto w-auto" id="confirmation" name="confirmation" placeholder="Confirm password" type="password">
+            <button class="btn btn-primary mx-auto w-auto" type="submit">Register</button>
         </div>
-        <button class="btn btn-primary" type="submit">Register</button>
     </form>
     {% if errorMsg %}
         <div id="errorAlert" class="alert alert-danger" role="alert" style="display: block;">{{ errorMsg }}</div>

@@ -9,6 +9,12 @@
     background-color: #212529;
 }
 
+.alert-danger
+{
+    display: block; 
+    text-align: center;    
+}
+
 #chartdiv {
     width: 90vw;
     height: 70vh;
@@ -48,7 +54,7 @@
 
 @media (max-width: 120px)
 {
-    
+
 }
 
 @media (max-width: 70px)
