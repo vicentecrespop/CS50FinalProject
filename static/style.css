@@ -3,9 +3,15 @@
     color: #212529;
     border-color: #212529;
 }
+
 .btn-outline-secondary:hover
 {
     background-color: #212529;
+}
+
+#chartdiv {
+    width: 90vw;
+    height: 70vh;
 }
 
 @media (max-width: 560px)
@@ -14,6 +20,10 @@
     {
         font-size: 50%;
     }
+    #chartdiv 
+    {        
+        height: 50vh;
+    }
 }
 
 @media (max-width: 280px)
@@ -21,7 +31,7 @@
     html 
     {
         font-size: 25%;
-    }
+    }    
 }
 
 @media (max-width: 145px)
@@ -30,6 +40,15 @@
     {
         font-size: 12%;
     }
+    #chartdiv
+    {
+        height: 40vh;
+    }
+}
+
+@media (max-width: 120px)
+{
+    
 }
 
 @media (max-width: 70px)

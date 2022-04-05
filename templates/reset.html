@@ -1,13 +1,18 @@
 {% extends "layout.html" %}
 
+{% block head %}<link rel="stylesheet" href="../static/style.css">{% endblock %}
+
+
 {% block title %}Reset Account{% endblock %}
 
 {% block main %}
     <form action="/reset" method="post">
-        <div class="input-group">
-            <label class="input-group-text form-control" for="inputGroupSelect01">Are you sure you want to reset your account?</label>
-            <button class="btn btn-outline-secondary" type="submit">YES</button>
-            <button class="btn btn-outline-secondary" type="button" onclick="window.location.href='/'">NO</button>
+        <div class="d-grid gap-2 col-6 mx-auto">
+            <div class="input-group">
+                <label class="input-group-text form-control btn-dark history" for="inputGroupSelect01">Are you sure you want to reset your account?</label>
+                <button class="btn btn-outline-secondary" type="submit">YES</button>
+                <button class="btn btn-outline-secondary" type="button" onclick="window.location.href='/'">NO</button>
+            </div>
         </div>
     </form>
 {% endblock %}
