@@ -71,9 +71,10 @@ def logout():
 @login_required
 def index():    
     
+    # Current date
     date = datetime.now().date()
-    month = date.month
-    year = date.year
+    current_month = date.month
+    current_year = date.year
 
     # List of expenses 
     expense_items = {"Transportation": 0, "Housing": 0, "Medical/Health": 0, "Groceries": 0, "Insurance": 0, "Shopping": 0, "Hobbies/Entertainment": 0, "Others": 0}
@@ -92,7 +93,7 @@ def index():
         # Check if user selected month and year
         if not month or not year:
             database.close()
-            return render_template("index.html", errorMsg="Select a month and year!!", year=date.year, expenses=None)        
+            return render_template("index.html", errorMsg="Select a month and year!!", year=current_year, expenses=None)        
 
         # Get usename
         db.execute("SELECT username FROM users WHERE id=?", (session["user_id"],))
@@ -107,7 +108,7 @@ def index():
         # Check if user has expenses on the selected date
         if len(expenses) != 1:
             database.close()
-            return render_template("index.html", errorMsg="No expenses registered at this date.", year=date.year, expenses=None)        
+            return render_template("index.html", errorMsg="No expenses registered at this date.", year=current_year, expenses=None)        
             
         # Divide expenses into types            
         for items in history:
@@ -127,11 +128,11 @@ def index():
 
         # Close database and return POST
         database.close()
-        return render_template("index.html", expenses=expenses_fraction, year=int(year), month=month, income=usd(user_income), spending=usd(user_spending))
+        return render_template("index.html", expenses=expenses_fraction, year=current_year, selected_year=int(year), month=month, income=usd(user_income), spending=usd(user_spending))
 
     # GET  
     database.close()
-    return render_template("index.html",expenses=None, year=year, month=month)
+    return render_template("index.html",expenses=None, year=current_year, month=current_month)
 
 @app.route("/register", methods=["GET", "POST"])
 def register():    
@@ -208,6 +209,8 @@ def reset():
 @login_required
 def add_income():
     # Add user income
+
+    # Get current date
     date = datetime.now().date()
 
     # POST
@@ -263,6 +266,8 @@ def spending():
 
     # List of expenses
     expenses = ["Transportation", "Housing", "Medical/Health", "Groceries", "Insurance", "Shopping", "Hobbies/Entertainment", "Others"]
+
+    # Get current date
     date = datetime.now().date()
 
     # POST
