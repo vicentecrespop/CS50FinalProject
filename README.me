@@ -4,6 +4,8 @@
 
 My project is a web-based application using JavaScript, Python and SQL that allows the user to keep track of they're monthly expenses in a chosen month and year.
 
+--LAYOUT--
+
 The file "layout.html" contains the basic layout of the pages that is a <body> with a navbar in the <header>, that changes it's information
 wheter the user is logged in or not, and an empty <main> part.
 
@@ -38,7 +40,7 @@ The POST return of the register() function redirects to "/login" wich gets "logi
 --LOGIN--
 
 The file "login.html" contains the login page of the web application.
-It contains a form in wich the user should input an username and password.
+It contains a form in which the user should input an username and password.
 Once the form is submitted to "/login" at "app.py" via POST
 The login() function will check with username and password were submitted, if not it will return to "login.html" passing a errorMsg as parameter.
 If submitted then it gets all information from users table were username is igual to the username typed 
@@ -46,4 +48,43 @@ If didn't found any information in users table with that username or if the pass
 If found username and password corrects then session["user_id"] receives the id from this user.
 The POST return of the login() function redirects to "/" wich gets "index.html"  
 
+--RESET--
+
+The file "reset.html" contains a page where the user can reset his account settings, deleting all history and expenses.
+The page contains a form in which the user is asked if he wants to reset his account. If he clicks no then he is redirected to "/".
+If he clicks yes then the form is submitted to "/reset" at "app.py" via POST.
+The reset() function will delete all information from the expenses and user_history tables where the user_id is igual to the id of the user who is currently logged in.
+Then it redirects to "/".
+
+--INCOME--
+
+The file "income.html" contains a page where the user can add an income.
+It contains a form in which the user should select a month, an year, a type of income and input an amount of the income. The form is submitted to "/income" at "app.py" via POST 
+when the user click the "Add income" button.
+The add_income() function will check if the user filled all the fields, else it returns to "income.html" passing a errorMsg and the current year as parameters.
+Then it checks if the amount is a valid number (float number higher then 0), else it returns to "income.html" passing a errorMsg and the current year as parameters.
+If user filled all the fields and the information is valid, the function will then select all information from expenses table where user_id is the id of user currently 
+logged in and the month and year are igual to the month and year submitted via form. If there's no information then it inserts this income amount to the database. Else it will get the 
+current income amount and add to the amount the user inputted and update the information on the database.
+After that it will insert this information into the user_history table
+Then it redirects to "/".
+
+--SPENDING--
+
+The file "spending.html" contains a page where the user can add an expense.
+It contains a form in which the user should select a month, an year, a type of expense and input the name of the item, the price the unity and the amount of items.
+The form is submitted to "/spending" at "app.py" via POST when the user clicks the "Add expense" button.
+The spending() function contains a list of expenses, that are shown when the user is selecting a type of expense.
+The function will check if the user filled all fields. If not then it returns to "spending.html" passing a errorMsg, the current year and the expenses list as parameters.
+Then it checks if information given by the user is valid. If not then it returns to "spending.html" passing a errorMsg, the current year and the expenses list as parameters.
+The function will then select all information from expenses table where user_id is the id of user currently 
+logged in and the month and year are igual to the month and year submitted via form. If there's no information then it inserts this spending amount to the database. Else it will get the 
+current spénding amount and add to the amount the user inputted and update the information on the database.
+After that it will insert this information into the user_history table.
+Then it redirects to "/"
+
+
+--helper.py--
+
+The file "helpers.py" contains two functions. One that decorate routes to check login and one that formats a number value to USD.
 
