@@ -48,6 +48,7 @@
     {% endif %}
     {% if expenses %}
     <div class="container-fluid">
+        <p class="text-start"><h3>{{ month }}/{{ year }}</h3></p>
         <p class="text-start"><h3>Income: {{ income }}</h3></p>
         <p class="text-start"><h3>Total Spendings: {{ spending }}</h3></p>
     </div>
@@ -99,8 +100,8 @@
         { sector: "Others", size: "{{ expenses[7] }}" } ]);
         
         // Disabling labels and ticks
-        series.labels.template.set("visible", false);
-        series.ticks.template.set("visible", false);
+        series.labels.template.set("forceHidden", true);
+        series.ticks.template.set("forceHidden", true);
         
         // Adding gradients
         series.slices.template.set("strokeOpacity", 0);
@@ -132,8 +133,8 @@
         legend.data.setAll(series.dataItems);
     
         legend.markers.template.setAll({
-            width:9,
-            height:9
+            width:8,
+            height:8
         })
         
         // Play initial series animation

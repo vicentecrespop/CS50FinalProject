@@ -67,7 +67,6 @@ def logout():
     # Redirect user to login form
     return redirect("/login")
 
-
 @app.route('/', methods=["GET", "POST"])
 @login_required
 def index():    
@@ -235,7 +234,7 @@ def add_income():
         db = database.cursor()        
 
         # Check if month and year already exist in expenses then update income
-        db.execute("SELECT * FROM expenses WHERE month=? AND year=?", (month, year))
+        db.execute("SELECT * FROM expenses WHERE month=? AND year=? AND user_id=?", (month, year, session["user_id"]))
         exist = db.fetchall()
         if len(exist) != 1:
             db.execute("INSERT INTO expenses (user_id, income, month, year) VALUES(?, ?, ?, ?)", (session["user_id"], float(amount), month, year))
@@ -297,7 +296,7 @@ def spending():
         db = database.cursor()
 
         # Check if month and year already exist in expenses then update spendings
-        db.execute("SELECT * FROM expenses WHERE month=? AND year=?", (month, year))
+        db.execute("SELECT * FROM expenses WHERE month=? AND year=? AND user_id=?", (month, year, session["user_id"]))
         exist = db.fetchall()
         if len(exist) != 1:
             db.execute("INSERT INTO expenses (user_id, spendings, month, year) VALUES(?, ?, ?, ?)", (session["user_id"], cost, month, year))

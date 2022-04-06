@@ -15,7 +15,8 @@
     text-align: center;    
 }
 
-#chartdiv {
+#chartdiv 
+{
     width: 90vw;
     height: 70vh;
 }
@@ -52,9 +53,12 @@
     }
 }
 
-@media (max-width: 120px)
+@media (max-width:100px)
 {
-
+    #chartdiv > div > div > div > canvas
+    {
+        display: none;
+    }
 }
 
 @media (max-width: 70px)
