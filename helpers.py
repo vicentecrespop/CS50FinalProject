@@ -4,7 +4,7 @@ from functools import wraps
 
 
 def login_required(f):
-    # Decorate routes to require login
+    # Decorate routes to require login.
 
     @wraps(f)
 
