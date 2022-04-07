@@ -1,5 +1,5 @@
 # MONTHLY EXPENSES
-### Video demo: https://youtu.be/6EVmLEZQEgU
+### Video demo: <https://youtu.be/6EVmLEZQEgU>
 ### Description:
 
 My project is a web-based application using JavaScript, Python and SQL that allows the user to keep track of they're monthly expenses in a chosen month and year.
